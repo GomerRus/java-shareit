@@ -41,15 +41,17 @@ public class UserRepositoryMemory implements UserRepository {
     }
 
     @Override
-    public User updateUser(UserDto user) {
-        User oldUser = users.get(user.getId());
-        if (user.getEmail() != null) {
-            oldUser.setEmail(user.getEmail());
+    public User updateUser(UserDto userDto, Long userId) {
+        User user = users.get(userId);
+        if (userDto.getName() != null) {
+            user.setName(userDto.getName());
         }
-        if (user.getName() != null) {
-            oldUser.setName(user.getName());
+        if (userDto.getEmail() != null && !userDto.getEmail().equals(user.getEmail())) {
+            user.setEmail(userDto.getEmail());
         }
-        return oldUser;
+        users.put(user.getId(), user);
+
+        return users.get(user.getId());
     }
 
     @Override

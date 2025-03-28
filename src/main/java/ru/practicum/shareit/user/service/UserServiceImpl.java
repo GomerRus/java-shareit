@@ -11,25 +11,33 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.dal.UserRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+
     private final UserRepository userRepository;
 
+    private Optional<User> getUser(Long userId) {
+        return userRepository.getUserById(userId);
+    }
+
     @Override
-    public UserDto createUser(User user) {
-        if (getAllUsers().stream().anyMatch(user1 -> user1.getEmail().equals(user.getEmail()))) {
-            throw new DuplicateException(String.format("This email address '{}' is already in exists.", user.getEmail()));
+    public UserDto createUser(UserDto userDto) {
+        if (getAllUsers().stream().anyMatch(user1 -> user1.getEmail().equals(userDto.getEmail()))) {
+            throw new DuplicateException(String.format("This email address '{}' is already in exists.", userDto.getEmail()));
         }
+        User user = UserMapper.mapToUser(userDto);
+
         return UserMapper.mapToUserDto(userRepository.createUser(user));
     }
 
     @Override
     public UserDto getUserById(Long userId) {
-        User user = userRepository.getUserById(userId)
-                .orElseThrow(() -> new NotFoundException("USER not found."));
+        User user = getUser(userId)
+                .orElseThrow(() -> new NotFoundException(String.format("USER not found with ID '{}'.", userId)));
         return UserMapper.mapToUserDto(user);
     }
 
@@ -41,21 +49,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto updateUser(UserDto user, Long userId) {
+    public UserDto updateUser(UserDto userDto, Long userId) {
         if (userId == null) {
             throw new ValidationException("USER ID must be specified");
         }
-        if (user.getEmail() != null) {
-            boolean checkUserEmail = getAllUsers().stream().anyMatch(user1 -> user1.getEmail().equals(user.getEmail()));
-            if (checkUserEmail) {
-                throw new DuplicateException(String.format("This email address '{}' is already in exists.", user.getEmail()));
+        if (userDto.getEmail() != null) {
+            if (userRepository.getAllUsers().stream()
+                    .filter(user1 -> user1.getId() != userDto.getId())
+                    .anyMatch(user1 -> user1.getEmail().equalsIgnoreCase(userDto.getEmail()))) {
+                throw new DuplicateException(String.format("This email address '{}' is already in exists.", userDto.getEmail()));
             }
         }
-        User oldUser = userRepository.getUserById(userId)
+        User oldUser = getUser(userId)
                 .orElseThrow(() -> new NotFoundException("User not found."));
-        user.setId(oldUser.getId());
+        userDto.setId(oldUser.getId());
 
-        return UserMapper.mapToUserDto(userRepository.updateUser(user));
+        return UserMapper.mapToUserDto(userRepository.updateUser(userDto, userId));
     }
 
     @Override

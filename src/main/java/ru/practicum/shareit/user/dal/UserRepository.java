@@ -13,7 +13,7 @@ public interface UserRepository {
 
     List<User> getAllUsers();
 
-    User updateUser(UserDto user);
+    User updateUser(UserDto userDto, Long userId);
 
     void removeUserById(Long userId);
 }

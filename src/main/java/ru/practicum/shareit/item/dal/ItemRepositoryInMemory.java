@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.dal;
 
 import org.springframework.stereotype.Repository;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.*;
@@ -46,17 +47,20 @@ public class ItemRepositoryInMemory implements ItemRepository {
 
     @Override
     public Item updateItem(Item item, Long itemId) {
-        Item oldItem = items.get(itemId);
-        if (item.getName() != null) {
-            oldItem.setName(item.getName());
+        if (items.containsKey(itemId)) {
+            Item oldItem = items.get(itemId);
+            if (item.getName() != null) {
+                oldItem.setName(item.getName());
+            }
+            if (item.getDescription() != null) {
+                oldItem.setDescription(item.getDescription());
+            }
+            if (item.getAvailable() != null) {
+                oldItem.setAvailable(item.getAvailable());
+            }
+            return oldItem;
         }
-        if (item.getDescription() != null) {
-            oldItem.setDescription(item.getDescription());
-        }
-        if (item.getAvailable() != null) {
-            oldItem.setAvailable(item.getAvailable());
-        }
-        return oldItem;
+        throw new NotFoundException("Could not find ITEM with ID " + itemId);
     }
 
     @Override

@@ -39,8 +39,6 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public AppError handleThrowable(final Throwable e) {
-        return new AppError(
-                "INTERNAL SERVER ERROR " + e.getMessage()
-        );
+        return new AppError("INTERNAL SERVER ERROR " + e.getMessage());
     }
 }

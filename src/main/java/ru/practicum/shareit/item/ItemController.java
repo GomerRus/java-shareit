@@ -3,10 +3,13 @@ package ru.practicum.shareit.item;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.transfer.Create;
 
 import java.util.List;
 
@@ -19,8 +22,9 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping
-    public ItemDto createItem(@Valid @RequestBody Item item, @RequestHeader("X-Sharer-User-Id") Long userId) {
-        log.info("POST / items: Create ITEM - {}", item.getName());
+    public ItemDto createItem(@Validated(Create.class) @RequestBody ItemDto itemDto, @RequestHeader("X-Sharer-User-Id") Long userId) {
+        log.info("POST / items: Create ITEM - {}", itemDto.getName());
+        Item item = ItemMapper.mapToItem(itemDto);
         return itemService.createItem(item, userId);
     }
 
@@ -37,9 +41,10 @@ public class ItemController {
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto updateItem(@Valid @RequestBody ItemDto item, @PathVariable("itemId") Long itemId,
+    public ItemDto updateItem(@Valid @RequestBody ItemDto itemDto, @PathVariable("itemId") Long itemId,
                               @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("PATH /items: Update ITEM by ID '{}' of owner ID '{}'", itemId, userId);
+        Item item = ItemMapper.mapToItem(itemDto);
         return itemService.updateItem(item, itemId, userId);
     }
 
