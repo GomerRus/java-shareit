@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
         }
         if (userDto.getEmail() != null) {
             if (userRepository.getAllUsers().stream()
-                    .filter(user1 -> user1.getId() != userDto.getId())
+                    .filter(user1 -> !user1.getId().equals(userDto.getId()))
                     .anyMatch(user1 -> user1.getEmail().equalsIgnoreCase(userDto.getEmail()))) {
                 throw new DuplicateException(String.format("This email address '{}' is already in exists.", userDto.getEmail()));
             }
