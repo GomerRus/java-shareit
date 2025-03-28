@@ -11,7 +11,6 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.dal.UserRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,8 +19,10 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-    private Optional<User> getUser(Long userId) {
-        return userRepository.getUserById(userId);
+    private User getUser(Long userId) {
+        User user = userRepository.getUserById(userId)
+                .orElseThrow(() -> new NotFoundException(String.format("USER not found with ID '{}'.", userId)));
+        return user;
     }
 
     @Override
@@ -36,8 +37,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUserById(Long userId) {
-        User user = getUser(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("USER not found with ID '{}'.", userId)));
+        User user = getUser(userId);
         return UserMapper.mapToUserDto(user);
     }
 
@@ -60,8 +60,7 @@ public class UserServiceImpl implements UserService {
                 throw new DuplicateException(String.format("This email address '{}' is already in exists.", userDto.getEmail()));
             }
         }
-        User oldUser = getUser(userId)
-                .orElseThrow(() -> new NotFoundException("User not found."));
+        User oldUser = getUser(userId);
         userDto.setId(oldUser.getId());
 
         return UserMapper.mapToUserDto(userRepository.updateUser(userDto, userId));
