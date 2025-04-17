@@ -5,9 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
-import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.transfer.Create;
-import ru.practicum.shareit.user.model.User;
 
 @Data
 @Builder
@@ -24,7 +22,4 @@ public class ItemDto {
 
     @NotNull(groups = {Create.class}, message = "AVAILABLE не может быть null")
     private Boolean available;
-
-    private User owner;
-    private ItemRequest request;
 }
