@@ -92,21 +92,20 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto updateItem(ItemDto itemDto, Long itemId, Long userId) {
         User user = getUser(userId);
-        Item oldItem = getItem(itemId);
+        Item item = getItem(itemId);
 
-        if (!oldItem.getOwner().equals(user)) {
-            throw new NotFoundException("Don't have the rights to update the ITEM");
+        if (!item.getOwner().equals(user)) {
+            throw new ValidationException("Don't have the rights to update the ITEM");
         }
         if (itemDto.getName() != null) {
-            oldItem.setName(itemDto.getName());
+            item.setName(itemDto.getName());
         }
         if (itemDto.getDescription() != null) {
-            oldItem.setDescription(itemDto.getDescription());
+            item.setDescription(itemDto.getDescription());
         }
         if (itemDto.getAvailable() != null) {
-            oldItem.setAvailable(itemDto.getAvailable());
+            item.setAvailable(itemDto.getAvailable());
         }
-        Item item = ItemMapper.mapToItem(itemDto);
 
         return ItemMapper.mapToItemDto(itemRepository.save(item));
     }
