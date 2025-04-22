@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class BookingDto {
-
     private Long id;
 
     @NotNull(message = "Date START cannot be NULL.")
