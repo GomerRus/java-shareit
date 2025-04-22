@@ -21,13 +21,13 @@ public class UserServiceImpl implements UserService {
 
     private User getUser(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("USER not found with ID '{}'.", userId)));
+                .orElseThrow(() -> new NotFoundException(String.format("USER not found with ID '%d'.", userId)));
     }
 
     @Override
     public UserDto createUser(UserDto userDto) {
         if (getAllUsers().stream().anyMatch(user1 -> user1.getEmail().equals(userDto.getEmail()))) {
-            throw new DuplicateException(String.format("This email address '{}' is already in exists.", userDto.getEmail()));
+            throw new DuplicateException(String.format("This email address '%s' is already in exists.", userDto.getEmail()));
         }
         User user = UserMapper.mapToUser(userDto);
 
@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
             if (getAllUsers().stream()
                     .filter(user1 -> !user1.getId().equals(userDto.getId()))
                     .anyMatch(user1 -> user1.getEmail().equalsIgnoreCase(userDto.getEmail()))) {
-                throw new DuplicateException(String.format("This email address '{}' is already in exists.", userDto.getEmail()));
+                throw new DuplicateException(String.format("This email address '%s' is already in exists.", userDto.getEmail()));
             }
         }
         User oldUser = getUser(userId);

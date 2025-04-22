@@ -32,18 +32,18 @@ public class BookingServiceImp implements BookingService {
 
     private User getUser(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("USER not found with ID'{}'", userId)));
+                .orElseThrow(() -> new NotFoundException(String.format("USER not found with ID'%d'", userId)));
     }
 
     private User getUserValid(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new ValidationException(String.format("USER not found with ID'{}'", userId)));
+                .orElseThrow(() -> new ValidationException(String.format("USER not found with ID'%d'", userId)));
 
     }
 
     private Booking getBooking(Long bookingId) {
         return bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new BookingNotFoundException(String.format("BOOKING not found with ID'{}'", bookingId)));
+                .orElseThrow(() -> new BookingNotFoundException(String.format("BOOKING not found with ID'%d'", bookingId)));
     }
 
     @Override
@@ -54,10 +54,10 @@ public class BookingServiceImp implements BookingService {
         User user = getUser(userId);
         Long itemId = bookingDto.getItemId();
         Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new NotFoundException(String.format("ITEM not found with ID'{}'",
+                .orElseThrow(() -> new NotFoundException(String.format("ITEM not found with ID'%d'",
                         itemId)));
         if (!item.getAvailable()) {
-            throw new ValidationException(String.format("ITEM with ID'{}' not available for booking.", item.getId()));
+            throw new ValidationException(String.format("ITEM with ID'%d' not available for booking.", item.getId()));
         }
 
         Booking booking = BookingMapper.mapToBooking(bookingDto);
@@ -73,9 +73,9 @@ public class BookingServiceImp implements BookingService {
         getUserValid(ownerId);
         Booking booking = getBooking(bookingId);
         if (!booking.getItem().getOwner().getId().equals(ownerId)) {
-            throw new NotFoundException(String.format("USER with ID '{}' is not the owner of this booking.", ownerId));
+            throw new NotFoundException(String.format("USER with ID '%d' is not the owner of this booking.", ownerId));
         }
-        if (booking.getStatus() == BookingStatus.APPROVED) {
+        if (booking.getStatus() == BookingStatus.APPROVED && approved) {
             throw new ItemIsNotAvailableException("You can't approved it a second time");
         }
         if (approved) {
@@ -92,7 +92,7 @@ public class BookingServiceImp implements BookingService {
         Booking booking = getBooking(bookingId);
 
         if (!booking.getBooker().equals(user) && !booking.getItem().getOwner().equals(user)) {
-            throw new BookingNotFoundException(String.format("User with ID'{}' is not the author of the booking or the owner.", bookerId));
+            throw new BookingNotFoundException(String.format("User with ID'%d' is not the author of the booking or the owner.", bookerId));
         }
         return BookingMapper.mapToBookingDto(booking);
     }
@@ -137,7 +137,7 @@ public class BookingServiceImp implements BookingService {
         getUser(ownerId);
         List<Item> items = itemRepository.findAllByOwnerId(ownerId);
         if (items.isEmpty()) {
-            throw new NotFoundException(String.format("USER with ID '{}' has no ITEMS", ownerId));
+            throw new NotFoundException(String.format("USER with ID '%d' has no ITEMS", ownerId));
         }
         Sort sort = Sort.by("start").descending();
 

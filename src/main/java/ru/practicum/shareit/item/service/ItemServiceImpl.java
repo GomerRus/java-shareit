@@ -23,6 +23,7 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,12 +37,12 @@ public class ItemServiceImpl implements ItemService {
 
     private User getUser(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("USER not found with ID'{}'", userId)));
+                .orElseThrow(() -> new NotFoundException(String.format("USER not found with ID'%d'", userId)));
     }
 
     private Item getItem(Long itemId) {
         return itemRepository.findById(itemId)
-                .orElseThrow(() -> new NotFoundException(String.format("ITEM not found with ID '{}'.", itemId)));
+                .orElseThrow(() -> new NotFoundException(String.format("ITEM not found with ID '%d'.", itemId)));
     }
 
     @Override
@@ -82,11 +83,39 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getAllItemByUser(Long userId) {
+    public List<ItemDtoOutput> getAllItemByUser(Long userId) {
         getUser(userId);
-        return itemRepository.findAllByOwnerId(userId).stream()
-                .map(ItemMapper::mapToItemDto)
-                .collect(Collectors.toList());
+        List<ItemDtoOutput> items = itemRepository.findAllByOwnerId(userId).stream()
+                .map(ItemMapper::mapToItemDtoOutput)
+                .toList();
+
+        List<Long> itemIds = items.stream().map(ItemDtoOutput::getId).toList();
+        Sort prevSort = Sort.by("end").descending();
+        List<Booking> prevBookingList = bookingRepository.findAllByItemIdInAndEndIsBeforeAndStatus(itemIds, LocalDateTime.now(),
+                BookingStatus.APPROVED, prevSort);
+
+        Sort nextSort = Sort.by("start").ascending();
+        List<Booking> nextBookingList = bookingRepository.findAllByItemIdInAndStartIsAfterAndStatus(itemIds, LocalDateTime.now(),
+                BookingStatus.APPROVED, nextSort);
+        List<Comment> commentList = commentRepository.findAllByItemIdIn(itemIds);
+
+        for (ItemDtoOutput itemDtoOutput : items) {
+            Optional<Booking> prevBooking = prevBookingList.stream()
+                    .filter(booking -> itemDtoOutput.getId().equals(booking.getItem().getId())).findAny();
+            prevBooking.ifPresent(booking -> itemDtoOutput.setLastBooking(booking.getEnd()));
+
+            Optional<Booking> nextBooking = nextBookingList.stream()
+                    .filter(booking -> itemDtoOutput.getId().equals(booking.getItem().getId())).findFirst();
+            nextBooking.ifPresent(booking -> itemDtoOutput.setNextBooking(booking.getStart()));
+
+            List<Comment> comments = commentList.stream()
+                    .filter(comment -> itemDtoOutput.getId().equals(comment.getItem().getId()))
+                    .toList();
+            if (!comments.isEmpty()) {
+                itemDtoOutput.setComments(comments);
+            }
+        }
+        return items;
     }
 
     @Override
@@ -128,10 +157,10 @@ public class ItemServiceImpl implements ItemService {
         Booking booking = bookingRepository.findAllByItemAndBookerPast(user, item, LocalDateTime.now()).stream()
                 .findFirst()
                 .orElseThrow(() -> new ValidationException(
-                        String.format("User with ID'{}' didn't take the ITEM with ID'{}' to rent", userId, itemId)));
+                        String.format("User with ID'%d' didn't take the ITEM with ID'%d' to rent", userId, itemId)));
 
         if (!booking.getStatus().equals(BookingStatus.APPROVED) || booking.getEnd().isAfter(LocalDateTime.now())) {
-            throw new ValidationException(String.format("User with ID'{}' didn't take the ITEM with ID'{}' to rent", userId, itemId));
+            throw new ValidationException(String.format("User with ID'%d' didn't take the ITEM with ID'%d' to rent", userId, itemId));
         }
 
         Comment comment = CommentMapper.mapToComment(commentDto, user, item);
