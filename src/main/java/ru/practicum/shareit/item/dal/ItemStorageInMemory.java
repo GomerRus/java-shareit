@@ -1,6 +1,6 @@
 package ru.practicum.shareit.item.dal;
 
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
 
@@ -8,8 +8,8 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-@Repository
-public class ItemRepositoryInMemory implements ItemRepository {
+@Component
+public class ItemStorageInMemory implements ItemStorage {
 
     private final Map<Long, Item> items = new HashMap<>();
 
