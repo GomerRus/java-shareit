@@ -44,7 +44,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    void createBookingWithUnknownUser() throws Exception {
+    void createBookingWithUser() throws Exception {
         Long userId = 10L;
         LocalDateTime start = LocalDateTime.now();
         LocalDateTime end = LocalDateTime.now().plusDays(1);
