@@ -48,7 +48,8 @@ public class BookingServiceImp implements BookingService {
 
     @Override
     public BookingDto createBooking(Long userId, BookingDtoOutput bookingDto) {
-        if (bookingDto.getStart().isAfter(bookingDto.getEnd()) || bookingDto.getStart().equals(bookingDto.getEnd())) {
+        if (bookingDto.getStart().isAfter(bookingDto.getEnd()) || bookingDto.getStart().equals(bookingDto.getEnd())
+                || bookingDto.getStart().equals(LocalDateTime.now())) {
             throw new ItemIsNotAvailableException("Error in the time range. Problem is in the START time or END time.");
         }
         User user = getUser(userId);

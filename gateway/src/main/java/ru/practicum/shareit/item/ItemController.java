@@ -15,13 +15,12 @@ import ru.practicum.shareit.item.dto.ItemDto;
 @RequestMapping("/items")
 @RequiredArgsConstructor
 @Validated
-
 public class ItemController {
 
     private final ItemClient itemClient;
 
     @PostMapping
-    public ResponseEntity<Object> createItem(@Valid @RequestBody ItemDto itemDto, @RequestHeader("X-Sharer-User-Id") Long userId) {
+    public ResponseEntity<Object> createItem(@RequestBody @Valid ItemDto itemDto, @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("POST / items: Create ITEM - {}", itemDto.getName());
         return itemClient.createItem(userId, itemDto);
     }
@@ -29,7 +28,7 @@ public class ItemController {
     @GetMapping("/{id}")
     public ResponseEntity<Object> getItemById(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable("id") Long itemId) {
         log.info("GET /items: Get ITEM by ID: {}", itemId);
-        return itemClient.getItemById(itemId, userId);
+        return itemClient.getItemById(userId, itemId);
     }
 
     @GetMapping

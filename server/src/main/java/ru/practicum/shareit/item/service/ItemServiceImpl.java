@@ -172,9 +172,6 @@ public class ItemServiceImpl implements ItemService {
         }
 
         Comment comment = CommentMapper.mapToComment(commentDto, user, item);
-        if (comment.getText().isEmpty()) {
-            throw new InvalidCommentException("TEXT = NuLL");
-        }
         comment.setItem(item);
         comment.setAuthor(user);
         comment.setCreated(LocalDateTime.now());
