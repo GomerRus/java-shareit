@@ -1,0 +1,25 @@
+package ru.practicum.shareit.booking.dto;
+
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
+import lombok.Data;
+
+import java.time.LocalDateTime;
+
+@Data
+@Builder
+public class BookingDto {
+    @NotNull(message = "Booking ID cannot be NULL.")
+    private Long id;
+
+    @NotNull(message = "Booking DATE START cannot be NULL.")
+    @FutureOrPresent(message = "Invalid booking date START. It should be provided as a future or present date.")
+    private LocalDateTime start;
+
+    @NotNull(message = "Booking DATE END cannot be NULL.")
+    @Future(message = "Invalid date END. It should be provided as a future.")
+    private LocalDateTime end;
+
+}
