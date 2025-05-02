@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class ItemDto {
 
     private Long id;
+    private Long requestId;
 
     @NotEmpty(message = "ITEM NAME не может быть пустым")
     private String name;
@@ -23,5 +24,5 @@ public class ItemDto {
     @NotNull(message = "ITEM AVAILABLE не может быть null")
     private Boolean available;
 
-    private Long requestId;
+
 }
