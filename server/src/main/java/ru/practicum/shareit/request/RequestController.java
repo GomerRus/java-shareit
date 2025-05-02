@@ -14,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RequestController {
 
-    private RequestService requestService;
+    private final RequestService requestService;
 
     @PostMapping
     public RequestDto createRequest(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody RequestDto requestDto) {
@@ -25,18 +25,18 @@ public class RequestController {
     @GetMapping
     public List<RequestDto> getUserRequests(@RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("GET / requests: Get Requests by User - {}", userId);
-        return null;
+        return requestService.getUserRequests(userId);
     }
 
     @GetMapping("/all")
     public List<RequestDto> getAllRequests(@RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("Get /requests/all: Get all Requests");
-        return null;
+        return requestService.getAllRequests(userId);
     }
 
     @GetMapping("/{id}")
     public RequestDto getRequestById(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable("id") Long requestId) {
         log.info("Get / requests/{requestId}: Get Request by ID'{}'", requestId);
-        return null;
+        return requestService.getRequestById(userId, requestId);
     }
 }

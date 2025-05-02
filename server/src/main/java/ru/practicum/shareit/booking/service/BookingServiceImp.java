@@ -91,7 +91,7 @@ public class BookingServiceImp implements BookingService {
         User user = getUserValid(bookerId);
         Booking booking = getBooking(bookingId);
 
-        if (!booking.getBooker().equals(user) && !booking.getItem().getOwner().equals(user)) {
+        if (!booking.getBooker().getId().equals(user.getId()) && !booking.getItem().getOwner().getId().equals(user.getId())) {
             throw new BookingNotFoundException(String.format("User with ID'%d' is not the author of the booking or the owner.", bookerId));
         }
         return BookingMapper.mapToBookingDto(booking);

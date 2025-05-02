@@ -23,7 +23,7 @@ public class ItemController {
     @PostMapping
     public ResponseEntity<Object> createItem(@Valid @RequestBody ItemDto itemDto, @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("POST / items: Create ITEM - {}", itemDto.getName());
-        return itemClient.createItem(itemDto, userId);
+        return itemClient.createItem(userId, itemDto);
     }
 
     @GetMapping("/{id}")

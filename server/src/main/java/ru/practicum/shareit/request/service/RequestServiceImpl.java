@@ -39,7 +39,9 @@ public class RequestServiceImpl implements RequestService {
         Request request = RequestMapper.mapToRequest(requestDto);
         request.setRequestor(requestor);
         request.setCreated(LocalDateTime.now());
-        return RequestMapper.mapToRequestDto(requestRepository.save(request));
+        request = requestRepository.save(request);
+        return RequestMapper.mapToRequestDto(request);
+       // return RequestMapper.mapToRequestDto(requestRepository.save(request));
     }
 
     @Override
