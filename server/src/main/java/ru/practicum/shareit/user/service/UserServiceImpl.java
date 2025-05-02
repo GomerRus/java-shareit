@@ -52,6 +52,10 @@ public class UserServiceImpl implements UserService {
         if (userId == null) {
             throw new ValidationException("USER ID must be specified");
         }
+        User user = getUser(userId);
+        if (userDto.getName() != null) {
+            user.setName(userDto.getName());
+        }
         if (userDto.getEmail() != null) {
             if (getAllUsers().stream()
                     .filter(user1 -> !user1.getId().equals(userDto.getId()))
@@ -59,21 +63,8 @@ public class UserServiceImpl implements UserService {
                 throw new DuplicateException(String.format("This email address '%s' is already in exists.", userDto.getEmail()));
             }
         }
-        User oldUser = getUser(userId);
-        userDto.setId(oldUser.getId());
-        User user = UserMapper.mapToUser(userDto);
-        User userUpdate = userRepository.save(userUpdate(oldUser, user));
-        return UserMapper.mapToUserDto(userUpdate);
-    }
-
-    private User userUpdate(User oldUser, User user) {
-        if (user.getName() != null) {
-            oldUser.setName(user.getName());
-        }
-        if (user.getEmail() != null) {
-            oldUser.setEmail(user.getEmail());
-        }
-        return oldUser;
+        user.setEmail(userDto.getEmail());
+        return UserMapper.mapToUserDto(userRepository.save(user));
     }
 
     @Override
