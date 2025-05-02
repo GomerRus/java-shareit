@@ -5,12 +5,13 @@ import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.shareit.booking.validator.DateControl;
 
 import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
-
+@DateControl
 public class BookingDto {
     @NotNull(message = "ItemBooking ID cannot be NULL.")
     private Long itemId;
