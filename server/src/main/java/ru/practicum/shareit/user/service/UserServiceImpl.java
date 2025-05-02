@@ -49,9 +49,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto updateUser(UserDto userDto, Long userId) {
-        if (userId == null) {
-            throw new ValidationException("USER ID must be specified");
-        }
         User user = getUser(userId);
         if (userDto.getName() != null) {
             user.setName(userDto.getName());

@@ -38,7 +38,7 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}")
-    public ResponseEntity<Object> updateUser(@Valid @RequestBody UserDto userDto, @PathVariable("userId") Long userId) {
+    public ResponseEntity<Object> updateUser(@RequestBody UserDto userDto, @PathVariable("userId") Long userId) {
         log.info("PATH / users/{}: Update USER - {}", userId, userDto);
         return userClient.updateUser(userId, userDto);
     }
