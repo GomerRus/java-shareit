@@ -58,8 +58,8 @@ public class UserServiceImpl implements UserService {
                     .anyMatch(user1 -> user1.getEmail().equalsIgnoreCase(userDto.getEmail()))) {
                 throw new DuplicateException(String.format("This email address '%s' is already in exists.", userDto.getEmail()));
             }
+            user.setEmail(userDto.getEmail());
         }
-        user.setEmail(userDto.getEmail());
         return UserMapper.mapToUserDto(userRepository.save(user));
     }
 

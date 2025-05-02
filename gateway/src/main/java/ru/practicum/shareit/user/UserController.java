@@ -20,7 +20,7 @@ public class UserController {
     private final UserClient userClient;
 
     @PostMapping
-    public ResponseEntity<Object> createUser(@Valid @RequestBody UserDto userDto) {
+    public ResponseEntity<Object> createUser(@RequestBody @Valid UserDto userDto) {
         log.info("POST / users: Create USER - {}.", userDto.getName());
         return userClient.createUser(userDto);
     }
