@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +47,9 @@ public class ItemController {
 
     @GetMapping("/search")
     public ResponseEntity<Object> searchItem(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                             @RequestParam(name = "text") String text) {
+                                             @RequestParam(name = "text")
+                                             @NotBlank(message = "Text не может быть пустым или содержать только пробелы")
+                                             String text) {
         log.info("GET /items/search: Get list of available ITEMS with text {}", text);
         return itemClient.searchItem(userId, text);
     }

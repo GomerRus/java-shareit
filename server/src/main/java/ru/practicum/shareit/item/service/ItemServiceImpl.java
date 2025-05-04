@@ -149,9 +149,6 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> searchItem(Long userId, String text) {
         getUser(userId);
-        if (text.isEmpty() || text.isBlank()) {
-            return List.of();
-        }
         return itemRepository.findByItemsByNameOrDescription(text).stream()
                 .map(ItemMapper::mapToItemDto)
                 .collect(Collectors.toList());

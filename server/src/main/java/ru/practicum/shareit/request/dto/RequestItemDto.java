@@ -13,4 +13,5 @@ public class RequestItemDto {
     private Long id;
     private String name;
     private Long owner;
+    private Long requestId;
 }

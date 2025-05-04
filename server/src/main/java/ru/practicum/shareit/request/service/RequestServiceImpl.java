@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dal.ItemRepository;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.dal.RequestRepository;
 import ru.practicum.shareit.request.dto.RequestDto;
 import ru.practicum.shareit.request.dto.RequestItemDto;
@@ -13,7 +14,10 @@ import ru.practicum.shareit.user.dal.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,22 +45,27 @@ public class RequestServiceImpl implements RequestService {
         request.setCreated(LocalDateTime.now());
         request = requestRepository.save(request);
         return RequestMapper.mapToRequestDto(request);
-       // return RequestMapper.mapToRequestDto(requestRepository.save(request));
     }
 
     @Override
     public List<RequestDto> getUserRequests(Long userId) {
         User requestor = getUser(userId);
-        List<RequestDto> requests = requestRepository.getUserRequests(requestor).stream()
-                .map(RequestMapper::mapToRequestDto)
+        List<Request> requests = requestRepository.getUserRequests(requestor);
+        List<Long> requestIds = requests.stream()
+                .map(Request::getId)
                 .toList();
-        for (RequestDto requestDto : requests) {
-            List<RequestItemDto> items = itemRepository.findAllByRequestId(requestDto.getId()).stream()
-                    .map(RequestMapper::mapToRequestItemDto)
-                    .toList();
-            requestDto.setItems(items);
-        }
-        return requests;
+
+        List<Item> allItems = itemRepository.findAllByRequestIdIn(requestIds);
+
+        Map<Long, List<RequestItemDto>> items = allItems.stream()
+                .map(RequestMapper::mapToRequestItemDto)
+                .collect(Collectors.groupingBy(RequestItemDto::getRequestId));
+
+        return requests.stream()
+                .map(RequestMapper::mapToRequestDto)
+                .peek(requestDto ->
+                        requestDto.setItems(items.getOrDefault(requestDto.getId(), Collections.emptyList())))
+                .toList();
     }
 
     @Override
